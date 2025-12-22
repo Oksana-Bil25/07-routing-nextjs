@@ -18,13 +18,10 @@ const Pagination: React.FC<PaginationProps> = ({
     onPageChange(data.selected + 1);
   };
 
-  if (totalPages <= 1) {
-    return null;
-  }
+  if (totalPages <= 1) return null;
 
   return (
     <nav className={css.paginationContainer}>
-      {" "}
       <ReactPaginate
         previousLabel={"<"}
         nextLabel={">"}
@@ -35,18 +32,17 @@ const Pagination: React.FC<PaginationProps> = ({
         onPageChange={handlePageClick}
         forcePage={currentPage - 1}
         containerClassName={css.pagination}
-        pageClassName={css["pageItem"]}
-        pageLinkClassName={css["pageLink"]}
-        previousClassName={css["pageItem"]}
-        previousLinkClassName={css["pageLink"]}
-        nextClassName={css["pageItem"]}
-        nextLinkClassName={css["pageLink"]}
-        breakClassName={css["pageItem"]}
-        breakLinkClassName={css["pageLink"]}
+        pageClassName={css.pageItem}
+        pageLinkClassName={css.pageLink}
+        previousClassName={css.pageItem}
+        previousLinkClassName={css.pageLink}
+        nextClassName={css.pageItem}
+        nextLinkClassName={css.pageLink}
+        breakClassName={css.pageItem}
+        breakLinkClassName={css.pageLink}
         activeClassName={css.active}
-        // Потрібно для бібліотеки
         renderOnZeroPageCount={null}
-      />{" "}
+      />
     </nav>
   );
 };

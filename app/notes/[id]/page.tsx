@@ -6,30 +6,33 @@ import {
 import { fetchNoteById } from "@/lib/api";
 import NoteDetailsClient from "./NoteDetails.client";
 
-export default async function NotePage({
-  params,
-}: {
+interface NoteDetailsProps {
   params: Promise<{ id: string }>;
-}) {
+}
+
+async function NoteDetails({ params }: NoteDetailsProps) {
   const { id } = await params;
+
+  if (id === "create" || id === "filter") {
+    return null;
+  }
+
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
-  });
+  try {
+    await queryClient.prefetchQuery({
+      queryKey: ["note", id],
+      queryFn: () => fetchNoteById(id),
+    });
+  } catch (error) {
+    console.error("Prefetch detail error:", error);
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <main
-        style={{
-          backgroundColor: "#f4f7f6",
-          minHeight: "100vh",
-          padding: "40px",
-        }}
-      >
-        <NoteDetailsClient />
-      </main>
+      <NoteDetailsClient />
     </HydrationBoundary>
   );
 }
+
+export default NoteDetails;

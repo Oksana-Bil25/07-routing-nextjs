@@ -1,45 +1,48 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import { deleteNote } from "@/lib/api";
 import type { Note } from "@/types/note";
 import NoteItem from "../NoteItem/NoteItem";
 import css from "./NoteList.module.css";
 
-export interface NoteListProps {
+interface NoteListProps {
   notes: Note[];
 }
 
-const NoteList = ({ notes }: NoteListProps) => {
+export default function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
 
-  const deleteMutation = useMutation({
+  const mutation = useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-      toast.success("Note deleted successfully!");
     },
-    onError: () => toast.error("Failed to delete note."),
   });
 
-  const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure?")) {
-      deleteMutation.mutate(id);
-    }
-  };
-
-  if (notes.length === 0) {
-    return <p className={css.noNotes}>No notes found.</p>;
+  if (!notes || notes.length === 0) {
+    return <p className={css.empty}>No notes found.</p>;
   }
+
+  // Лог для відстеження проблемних нотаток
+  console.log("Notes received:", notes);
 
   return (
     <ul className={css.list}>
-      {notes.map((note) => (
-        <NoteItem key={note.id} note={note} onDelete={handleDelete} />
+      {notes.map((note, index) => (
+        <li key={note._id ?? `${note.title}-${index}`}>
+          {/* Якщо note._id немає, не даємо некоректний Link */}
+          {note._id ? (
+            <NoteItem note={note} onDelete={(id) => mutation.mutate(id)} />
+          ) : (
+            <div className={css.listItem}>
+              <h3 className={css.title}>{note.title || "Untitled"}</h3>
+              <p className={css.content}>{note.content || "No content"}</p>
+              <p style={{ color: "red" }}>⚠️ Note ID missing!</p>
+            </div>
+          )}
+        </li>
       ))}
     </ul>
   );
-};
-
-export default NoteList;
+}

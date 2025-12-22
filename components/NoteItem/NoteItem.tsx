@@ -1,45 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import css from "./NoteItem.module.css";
 import type { Note } from "@/types/note";
+import css from "./NoteItem.module.css";
 
 interface NoteItemProps {
   note: Note;
   onDelete: (id: string) => void;
 }
 
-const NoteItem = ({ note, onDelete }: NoteItemProps) => {
+export default function NoteItem({ note, onDelete }: NoteItemProps) {
   return (
-    <li className={css.listItem}>
-      <h2 className={css.title}>{note.title}</h2>
-      <p className={css.content}>
-        {note.content.length > 100
-          ? `${note.content.substring(0, 100)}...`
-          : note.content}
-      </p>
+    <div className={css.listItem}>
+      <h3 className={css.title}>{note.title}</h3>
+      <p className={css.content}>{note.content}</p>
 
       <div className={css.footer}>
-        {note.tag && <span className={css.tag}>{note.tag}</span>}
+        <span className={css.tag}>{note.tag}</span>
 
         <div className={css.actions}>
-          <Link href={`/notes/${note.id}`} className={css.detailsLink}>
-            View details
-          </Link>
+          {note._id ? (
+            <Link href={`/notes/${note._id}`} className={css.detailsLink}>
+              View details
+            </Link>
+          ) : (
+            <span style={{ color: "red" }}>No ID</span>
+          )}
 
           <button
             className={css.button}
-            onClick={(e) => {
-              e.preventDefault();
-              onDelete(note.id);
-            }}
+            onClick={() => note._id && onDelete(note._id)}
           >
             Delete
           </button>
         </div>
       </div>
-    </li>
+    </div>
   );
-};
-
-export default NoteItem;
+}
