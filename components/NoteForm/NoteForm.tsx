@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import css from "./NoteForm.module.css";
 
-// Створюємо опис полів форми, щоб прибрати помилку "any"
 interface NoteFormData {
   title: string;
   content: string;
@@ -17,7 +16,6 @@ interface NoteFormProps {
 }
 
 const NoteForm = ({ onClose, onSubmit, isLoading }: NoteFormProps) => {
-  // Вказуємо тип для useForm
   const { register, handleSubmit } = useForm<NoteFormData>();
 
   return (

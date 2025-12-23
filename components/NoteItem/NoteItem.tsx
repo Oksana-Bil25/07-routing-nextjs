@@ -21,7 +21,6 @@ export default function NoteItem({ note, onDelete }: NoteItemProps) {
         <span className={css.tag}>{note.tag}</span>
 
         <div className={css.actions}>
-          {/* Використовуємо note.id для переходу на сторінку деталей */}
           <Link href={`/notes/${note.id}`} className={css.detailsLink}>
             View details
           </Link>

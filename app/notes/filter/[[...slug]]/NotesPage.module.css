@@ -1,14 +1,13 @@
 .toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Це вирівняє центри всіх трьох елементів */
+  align-items: center; 
   padding: 10px 0;
   margin-bottom: 30px;
   gap: 20px;
-  min-height: 60px; /* Додаємо фіксовану висоту, щоб лінія не "стрибала" */
+  min-height: 60px; 
 }
 
-/* Якщо пагінація все одно вище, ми приберемо її автоматичні відступи */
 .toolbar > div {
   display: flex;
   align-items: center;

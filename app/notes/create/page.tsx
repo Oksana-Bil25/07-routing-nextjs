@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { createNote } from "@/lib/api";
-import NoteForm from "@/components/NoteForm/NoteForm"; // Переконайтеся, що шлях правильний
+import NoteForm from "@/components/NoteForm/NoteForm";
 
 export default function CreateNotePage() {
   const queryClient = useQueryClient();
@@ -12,7 +12,6 @@ export default function CreateNotePage() {
   const mutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      // Оновлюємо кеш, щоб нова нотатка з'явилася в списку
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       router.push("/notes/filter/all");
     },

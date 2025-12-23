@@ -5,12 +5,10 @@ import { fetchNoteById } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import css from "./NoteDetails.module.css";
 
-// Додаємо цей інтерфейс
 interface NoteDetailsClientProps {
   id: string;
 }
 
-// Вказуємо тип для аргументів компонента
 export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
   const router = useRouter();
 
