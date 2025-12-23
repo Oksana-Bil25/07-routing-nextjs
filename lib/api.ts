@@ -47,7 +47,6 @@ export const createNote = async (data: {
 };
 
 export const deleteNote = async (id: string) => {
-  // Тепер id точно передається в URL
   const response = await noteInstance.delete(`/notes/${id}`);
   return response.data;
 };
