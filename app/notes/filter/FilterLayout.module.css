@@ -1,0 +1,26 @@
+.filterWrapper {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sidebarContainer {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.notesContainer {
+  flex-grow: 1;
+}
+
+@media (max-width: 768px) {
+  .filterWrapper {
+    flex-direction: column;
+  }
+  .sidebarContainer {
+    width: 100%;
+  }
+}

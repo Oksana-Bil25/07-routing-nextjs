@@ -1,3 +1,5 @@
+import styles from "./FilterLayout.module.css";
+
 export default function FilterLayout({
   children,
   sidebar,
@@ -6,9 +8,9 @@ export default function FilterLayout({
   sidebar: React.ReactNode;
 }) {
   return (
-    <div style={{ display: "flex", gap: "20px" }}>
-      <aside>{sidebar}</aside>
-      <section>{children}</section>
+    <div className={styles.filterWrapper}>
+      <aside className={styles.sidebarContainer}>{sidebar}</aside>
+      <main className={styles.notesContainer}>{children}</main>
     </div>
   );
 }
