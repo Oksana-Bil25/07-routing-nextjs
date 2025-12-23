@@ -6,30 +6,33 @@ import css from "./NoteItem.module.css";
 
 interface NoteItemProps {
   note: Note;
-  onDelete: (id: string) => void;
+  onDelete: () => void;
 }
 
 export default function NoteItem({ note, onDelete }: NoteItemProps) {
   return (
     <div className={css.listItem}>
-      <h3 className={css.title}>{note.title}</h3>
-      <p className={css.content}>{note.content}</p>
+      <div className={css.contentWrapper}>
+        <h3 className={css.title}>{note.title}</h3>
+        <p className={css.content}>{note.content}</p>
+      </div>
 
       <div className={css.footer}>
         <span className={css.tag}>{note.tag}</span>
 
         <div className={css.actions}>
-          {note._id ? (
-            <Link href={`/notes/${note._id}`} className={css.detailsLink}>
-              View details
-            </Link>
-          ) : (
-            <span style={{ color: "red" }}>No ID</span>
-          )}
+          {/* Використовуємо note.id для переходу на сторінку деталей */}
+          <Link href={`/notes/${note.id}`} className={css.detailsLink}>
+            View details
+          </Link>
 
           <button
             className={css.button}
-            onClick={() => note._id && onDelete(note._id)}
+            onClick={(e) => {
+              e.preventDefault();
+              onDelete();
+            }}
+            type="button"
           >
             Delete
           </button>

@@ -1,63 +1,18 @@
 import axios from "axios";
-import type { Note, NoteTag } from "@/types/note";
 
-const API_BASE_URL = "https://notehub-public.goit.study/api";
+const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
-// --- Типи ---
-interface RawNote {
-  _id?: string;
-  title: string;
-  content: string;
-  tag?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-// Можливі теги
-const validTags: NoteTag[] = [
-  "Todo",
-  "Work",
-  "Personal",
-  "Health",
-  "Meeting",
-  "Shopping",
-];
-const parseTag = (tag?: string): NoteTag => {
-  if (tag && validTags.includes(tag as NoteTag)) return tag as NoteTag;
-  return "Todo";
-};
-
-// --- Авторизація ---
-const getAuthToken = () => {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("token");
-};
-
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+const noteInstance = axios.create({
+  baseURL: "https://notehub-public.goit.study/api",
 });
 
-apiClient.interceptors.request.use((config) => {
-  const token = getAuthToken();
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+noteInstance.interceptors.request.use((config) => {
+  if (TOKEN) {
+    config.headers.Authorization = `Bearer ${TOKEN}`;
   }
   return config;
 });
 
-// --- API Функції ---
-
-// Логін (отримання токена)
-export const login = async (email: string, password: string): Promise<void> => {
-  const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-    email,
-    password,
-  });
-  const { token } = response.data;
-  localStorage.setItem("token", token);
-};
-
-// Отримати всі нотатки
 export const fetchNotes = async ({
   search,
   page,
@@ -66,77 +21,33 @@ export const fetchNotes = async ({
   search?: string;
   page?: number;
   tag?: string;
-}): Promise<{ notes: Note[]; totalPages: number }> => {
-  const response = await apiClient.get<{
-    notes: RawNote[];
-    totalPages?: number;
-  }>("/notes", {
-    params: tag === "all" ? { search, page } : { search, page, tag },
+}) => {
+  const response = await noteInstance.get("/notes", {
+    params: {
+      search: search || undefined,
+      page: page || 1,
+      tag: tag === "all" ? undefined : tag,
+    },
   });
-
-  const data = response.data;
-
-  const notesWithId: Note[] = data.notes.map((note, i) => ({
-    _id: note._id ?? `${note.title}-${i}-${Date.now()}`,
-    title: note.title,
-    content: note.content,
-    tag: parseTag(note.tag),
-    createdAt: note.createdAt ?? new Date().toISOString(),
-    updatedAt: note.updatedAt ?? new Date().toISOString(),
-  }));
-
-  return {
-    notes: notesWithId,
-    totalPages: data.totalPages ?? 1,
-  };
+  return response.data;
 };
 
-// Отримати одну нотатку по id
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await apiClient.get<RawNote>(`/notes/${id}`);
-  const note = response.data;
-  return {
-    _id: note._id ?? `${note.title}-${Date.now()}`,
-    title: note.title,
-    content: note.content,
-    tag: parseTag(note.tag),
-    createdAt: note.createdAt ?? new Date().toISOString(),
-    updatedAt: note.updatedAt ?? new Date().toISOString(),
-  };
+export const fetchNoteById = async (id: string) => {
+  const response = await noteInstance.get(`/notes/${id}`);
+  return response.data;
 };
 
-// Створити нотатку
-export const createNote = async (noteData: Partial<Note>): Promise<Note> => {
-  const response = await apiClient.post<RawNote>("/notes", noteData);
-  const note = response.data;
-  return {
-    _id: note._id ?? `${note.title}-${Date.now()}`,
-    title: note.title,
-    content: note.content,
-    tag: parseTag(note.tag),
-    createdAt: note.createdAt ?? new Date().toISOString(),
-    updatedAt: note.updatedAt ?? new Date().toISOString(),
-  };
+export const createNote = async (data: {
+  title: string;
+  content: string;
+  tag: string;
+}) => {
+  const response = await noteInstance.post("/notes", data);
+  return response.data;
 };
 
-// Видалити нотатку
-export const deleteNote = async (id: string): Promise<void> => {
-  await apiClient.delete(`/notes/${id}`);
-};
-
-// Оновити нотатку
-export const updateNote = async (
-  id: string,
-  noteData: Partial<Note>
-): Promise<Note> => {
-  const response = await apiClient.put<RawNote>(`/notes/${id}`, noteData);
-  const note = response.data;
-  return {
-    _id: note._id ?? `${note.title}-${Date.now()}`,
-    title: note.title,
-    content: note.content,
-    tag: parseTag(note.tag),
-    createdAt: note.createdAt ?? new Date().toISOString(),
-    updatedAt: note.updatedAt ?? new Date().toISOString(),
-  };
+export const deleteNote = async (id: string) => {
+  // Тепер id точно передається в URL
+  const response = await noteInstance.delete(`/notes/${id}`);
+  return response.data;
 };

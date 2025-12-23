@@ -1,38 +1,13 @@
-import {
-  QueryClient,
-  HydrationBoundary,
-  dehydrate,
-} from "@tanstack/react-query";
-import { fetchNoteById } from "@/lib/api";
 import NoteDetailsClient from "./NoteDetails.client";
 
-interface NoteDetailsProps {
+// В Next.js 15 params — це Promise
+export default async function NotePage({
+  params,
+}: {
   params: Promise<{ id: string }>;
-}
-
-async function NoteDetails({ params }: NoteDetailsProps) {
+}) {
   const { id } = await params;
 
-  if (id === "create" || id === "filter") {
-    return null;
-  }
-
-  const queryClient = new QueryClient();
-
-  try {
-    await queryClient.prefetchQuery({
-      queryKey: ["note", id],
-      queryFn: () => fetchNoteById(id),
-    });
-  } catch (error) {
-    console.error("Prefetch detail error:", error);
-  }
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <NoteDetailsClient />
-    </HydrationBoundary>
-  );
+  // Тепер помилка "Property id does not exist" зникне
+  return <NoteDetailsClient id={id} />;
 }
-
-export default NoteDetails;

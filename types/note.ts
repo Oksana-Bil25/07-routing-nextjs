@@ -7,12 +7,13 @@ export type NoteTag =
   | "Shopping";
 
 export interface Note {
-  _id: string;
+  id: string; // Поле, яке реально приходить з сервера
   title: string;
   content: string;
-  tag: NoteTag;
-  createdAt: string;
-  updatedAt: string;
+  tag: string;
+  createdAt?: string;
+  updatedAt?: string;
+  _id?: string; // Залишаємо про всяк випадок як необов'язкове
 }
 
 export interface NoteFormData {
