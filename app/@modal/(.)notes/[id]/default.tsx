@@ -1,4 +1,4 @@
-export default function ModalSlotDefault({
+export default function ModalLayout({
   children,
 }: {
   children: React.ReactNode;

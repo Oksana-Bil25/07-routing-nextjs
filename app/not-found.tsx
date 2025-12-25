@@ -1,4 +1,4 @@
-import css from "./Home.module.css";
+import css from "./Home.module.css"; // Додали цей рядок
 
 export default function NotFound() {
   return (
