@@ -1,30 +1,24 @@
-import {
-  QueryClient,
-  HydrationBoundary,
-  dehydrate,
-} from "@tanstack/react-query";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
-import NotePreviewClient from "./NotePreview.client";
+import NotePreviewClient from "@/app/@modal/(.)notes/[id]/NotePreview.client";
+import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
 
 interface NotePageProps {
-  params: { id: string };
+  params: {
+    id: string;
+  };
 }
 
-export default async function NotePage({ params }: NotePageProps) {
-  const queryClient = new QueryClient();
-
-  // Передзавантаження даних на сервері
-  await queryClient.prefetchQuery({
+export default function NotePage({ params }: NotePageProps) {
+  const { data: note, isLoading } = useQuery({
     queryKey: ["note", params.id],
     queryFn: () => fetchNoteById(params.id),
   });
 
-  return (
-    <main style={{ padding: "20px" }}>
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        {/* Клієнтський компонент, який відображає дані нотатки */}
-        <NotePreviewClient id={params.id} />
-      </HydrationBoundary>
-    </main>
-  );
+  if (isLoading) return <LoadingIndicator />;
+  if (!note) return <p>Note not found</p>;
+
+  return <NotePreviewClient id={params.id} />;
 }
