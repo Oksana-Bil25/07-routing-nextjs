@@ -1,8 +1,5 @@
-// 1. Імпортуємо САМ КОМПОНЕНТ (вкажіть правильний шлях до .tsx файлу)
-import SidebarNotes from "./@sidebar/SidebarNotes";
-
-// 2. Імпортуємо СТИЛІ для лейауту (це у вас вже було вірно)
 import styles from "./LayoutNotes.module.css";
+import SidebarNotes from "./@sidebar/SidebarNotes";
 import Link from "next/link";
 
 export default function FilterLayout({
@@ -13,7 +10,6 @@ export default function FilterLayout({
   return (
     <div className={styles.layoutContainer}>
       <aside className={styles.blackSidebar}>
-        {/* Тепер це спрацює, бо SidebarNotes — це компонент, а не об'єкт стилів */}
         <SidebarNotes />
 
         <Link href="/notes/create">

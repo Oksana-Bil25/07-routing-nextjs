@@ -2,46 +2,40 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import css from "./Sidebar.module.css";
+import styles from "./Sidebar.module.css";
 
 const CATEGORIES = [
   { name: "All Notes", slug: "all" },
-  { name: "Work", slug: "Work" },
-  { name: "Personal", slug: "Personal" },
-  { name: "Todo", slug: "Todo" },
-  { name: "Meeting", slug: "Meeting" },
-  { name: "Shopping", slug: "Shopping" },
+  { name: "Work", slug: "work" },
+  { name: "Personal", slug: "personal" },
+  { name: "Todo", slug: "todo" },
 ];
 
-export default function SidebarPage() {
+export default function SidebarNotes() {
   const pathname = usePathname();
 
   return (
-    <aside className={css.sidebar}>
-      <h2 className={css.title}>Categories</h2>
-      <nav>
-        <ul className={css.list}>
-          {CATEGORIES.map((cat) => {
-            const href =
-              cat.slug === "all"
-                ? "/notes/filter"
-                : `/notes/filter/${cat.slug}`;
+    <aside className={styles.sidebar}>
+      <h2 className={styles.title}>Categories</h2>
+      <ul className={styles.list}>
+        {CATEGORIES.map((cat) => {
+          const href =
+            cat.slug === "all" ? "/notes/filter" : `/notes/filter/${cat.slug}`;
 
-            const isActive = pathname === href;
+          const active = pathname === href;
 
-            return (
-              <li key={cat.slug} className={css.item}>
-                <Link
-                  href={href}
-                  className={isActive ? css.activeLink : css.link}
-                >
-                  {cat.name}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+          return (
+            <li key={cat.slug}>
+              <Link
+                href={href}
+                className={active ? styles.active : styles.link}
+              >
+                {cat.name}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </aside>
   );
 }
