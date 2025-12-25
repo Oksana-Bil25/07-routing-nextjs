@@ -5,9 +5,5 @@ export default function NotesLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className={styles.container}>
-      <main className={styles.notesWrapper}>{children}</main>
-    </div>
-  );
+  return <div className={styles.container}>{children}</div>;
 }
