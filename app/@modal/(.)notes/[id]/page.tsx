@@ -1,15 +1,11 @@
-"use client";
+import NotePreviewClient from "./NotePreview.client";
 
-import { useRouter } from "next/navigation";
-import Modal from "@/components/Modal/Modal";
-import NotePreviewClient from "@/app/@modal/(.)notes/[id]/NotePreview.client";
+type Props = {
+  params: {
+    id: string;
+  };
+};
 
-export default function NoteModalPage({ params }: { params: { id: string } }) {
-  const router = useRouter();
-
-  return (
-    <Modal onClose={() => router.back()}>
-      <NotePreviewClient id={params.id} />
-    </Modal>
-  );
+export default function NoteModalPage({ params }: Props) {
+  return <NotePreviewClient noteId={params.id} />;
 }

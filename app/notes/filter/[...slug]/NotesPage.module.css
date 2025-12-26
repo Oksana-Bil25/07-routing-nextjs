@@ -1,16 +1,32 @@
+.app {
+  flex: 1;
+  padding: 24px;
+}
+
 .toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: center; 
-  padding: 10px 0;
-  margin-bottom: 30px;
-  gap: 20px;
-  min-height: 60px; 
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
 }
 
-.toolbar > div {
+.createBtn {
+  padding: 8px 16px;
+  background-color: #0070f3;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.createBtn:hover {
+  background-color: #0056b3;
+}
+
+.paginationWrapper {
   display: flex;
-  align-items: center;
-  margin: 0 !important;
-  padding: 0 !important;
+  justify-content: center;
+  margin-bottom: 20px;
 }

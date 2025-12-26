@@ -1,3 +1,6 @@
+import "./globals.css";
+import { Providers } from "./providers";
+
 export default function RootLayout({
   children,
   modal,
@@ -8,8 +11,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
-        {modal}
+        <Providers>
+          {children}
+          {modal}
+        </Providers>
       </body>
     </html>
   );

@@ -2,51 +2,33 @@ import axios from "axios";
 
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
-const noteInstance = axios.create({
+export const noteInstance = axios.create({
   baseURL: "https://notehub-public.goit.study/api",
-});
-
-noteInstance.interceptors.request.use((config) => {
-  if (TOKEN) {
-    config.headers.Authorization = `Bearer ${TOKEN}`;
-  }
-  return config;
+  headers: TOKEN ? { Authorization: `Bearer ${TOKEN}` } : undefined,
 });
 
 export const fetchNotes = async ({
   search,
-  page,
-  tag,
+  page = 1,
+  category,
 }: {
   search?: string;
   page?: number;
-  tag?: string;
-}) => {
+  category?: string;
+} = {}) => {
   const response = await noteInstance.get("/notes", {
     params: {
-      search: search || undefined,
-      page: page || 1,
-      tag: tag === "all" ? undefined : tag,
+      search,
+      page,
+      category: category === "all" ? undefined : category,
     },
   });
+
   return response.data;
 };
 
 export const fetchNoteById = async (id: string) => {
+  if (!id) throw new Error("Note id is required");
   const response = await noteInstance.get(`/notes/${id}`);
-  return response.data;
-};
-
-export const createNote = async (data: {
-  title: string;
-  content: string;
-  tag: string;
-}) => {
-  const response = await noteInstance.post("/notes", data);
-  return response.data;
-};
-
-export const deleteNote = async (id: string) => {
-  const response = await noteInstance.delete(`/notes/${id}`);
   return response.data;
 };

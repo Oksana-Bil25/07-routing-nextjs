@@ -1,85 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useDebounce } from "use-debounce";
-import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "@/lib/api";
 import NoteList from "@/components/NoteList/NoteList";
-import Pagination from "@/components/Pagination/Pagination";
-import SearchBox from "@/components/SearchBox/SearchBox";
-import styles from "./NotesPage.module.css";
+import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
+import { Note } from "@/types/note";
 
 interface NotesClientProps {
-  tag?: string;
+  category?: string;
 }
 
-export default function NotesClient({ tag = "all" }: NotesClientProps) {
-  const [searchText, setSearchText] = useState("");
-  const [page, setPage] = useState(1);
-  const [debouncedSearch] = useDebounce(searchText, 500);
+export default function NotesClient({ category }: NotesClientProps) {
+  const normalizedCategory = category === "all" ? undefined : category;
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", { search: debouncedSearch, page, tag }],
-    queryFn: () => fetchNotes({ search: debouncedSearch, page, tag }),
-    placeholderData: keepPreviousData,
+    queryKey: ["notes", normalizedCategory ?? "all"],
+    queryFn: () =>
+      fetchNotes({
+        search: "",
+        page: 1,
+        category: normalizedCategory,
+      }),
+    staleTime: 1000 * 60,
   });
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(e.target.value);
-    setPage(1);
-  };
+  if (isLoading) return <LoadingIndicator />;
+  if (isError) return <p style={{ color: "red" }}>Error loading notes.</p>;
+
+  const notes: Note[] = Array.isArray(data) ? data : data?.notes ?? [];
 
   return (
-    <div className={styles.app}>
-      <header
-        className={styles.toolbar}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-          gap: "15px",
-        }}
-      >
-        <SearchBox value={searchText} onChange={handleSearchChange} />
-
-        <Link
-          href="/notes/create"
-          className={styles.createBtn}
-          style={{
-            backgroundColor: "#0070f3",
-            color: "white",
-            padding: "8px 16px",
-            borderRadius: "6px",
-            textDecoration: "none",
-            fontWeight: "bold",
-          }}
-        >
-          Create note +
-        </Link>
-      </header>
-
-      {data && data.totalPages > 1 && (
-        <div
-          style={{
-            marginBottom: "20px",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <Pagination
-            currentPage={page}
-            totalPages={data.totalPages}
-            onPageChange={(p: number) => setPage(p)}
-          />
-        </div>
-      )}
-
-      {isLoading && <p>Loading...</p>}
-      {isError && <p style={{ color: "red" }}>Error loading notes.</p>}
-
-      {data && <NoteList notes={data.notes} />}
+    <div>
+      {notes.length > 0 ? <NoteList notes={notes} /> : <p>No notes found.</p>}
     </div>
   );
 }

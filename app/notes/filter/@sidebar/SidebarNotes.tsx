@@ -21,7 +21,6 @@ export default function SidebarNotes() {
         {CATEGORIES.map((cat) => {
           const href =
             cat.slug === "all" ? "/notes/filter" : `/notes/filter/${cat.slug}`;
-
           const active = pathname === href;
 
           return (

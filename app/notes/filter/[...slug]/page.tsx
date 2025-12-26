@@ -1,20 +1,16 @@
-import { Suspense } from "react";
 import NotesClient from "./Notes.client";
 
-interface FilteredNotesPageProps {
-  params: Promise<{ slug?: string[] }>;
-}
+type Props = {
+  params: {
+    slug?: string[];
+  };
+};
 
-export default async function FilteredNotesPage({
-  params,
-}: FilteredNotesPageProps) {
-  const { slug } = await params;
+export default function FilteredNotesPage({ params }: Props) {
+  const category =
+    params.slug && params.slug.length > 0 && params.slug[0] !== "all"
+      ? params.slug[0]
+      : undefined;
 
-  const tag = slug && slug.length > 0 ? slug[0] : "all";
-
-  return (
-    <Suspense fallback={<div>Loading notes...</div>}>
-      <NotesClient key={tag} tag={tag} />
-    </Suspense>
-  );
+  return <NotesClient category={category} />;
 }
