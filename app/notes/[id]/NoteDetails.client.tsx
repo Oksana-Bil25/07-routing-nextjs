@@ -7,6 +7,7 @@ interface Note {
   id: string;
   title: string;
   content: string;
+  tag: string;
 }
 
 interface NoteDetailsClientProps {
@@ -24,6 +25,7 @@ export default function NoteDetailsClient({ note }: NoteDetailsClientProps) {
 
       <h1 className={css.title}>{note.title}</h1>
       <p className={css.content}>{note.content}</p>
+      <p className={css.tag}>Tag: {note.tag}</p>
     </div>
   );
 }

@@ -1,64 +1,60 @@
-.paginationContainer {
-  width: 100%;
-  clear: both; /* На випадок, якщо нотатки мають float: left */
-  display: block;
-  text-align: center; /* Це старий, але надійний спосіб центрування */
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .pagination {
-  display: inline-flex; /* КЛЮЧОВИЙ МОМЕНТ: inline-flex робить список вузьким */
-  justify-content: center;
-  gap: 8px;
+  display: flex;
+  gap: 6px;
   list-style: none;
   padding: 0;
-  margin: 30px auto; /* Центрує список всередині контейнера */
+  margin: 0;
 }
 
-/* Колір цифр (зробимо темним, бо фон білий) */
-.pageLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  text-decoration: none;
-  color: #1a1a1a; /* Твій колір title з Home.module */
-  font-size: 14px;
-}
-
-/* Сама "коробочка" кнопки (li) */
+/* Квадратик для кожної цифри */
 .pageItem {
-  border: 1px solid #444; /* Темніша рамка під стиль твого сайту */
+  border: 1px solid #e0e0e0;
   border-radius: 6px;
   cursor: pointer;
-  min-width: 40px;
-  height: 40px;
-  background-color: transparent;
-  transition: all 0.3s ease;
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  transition: all 0.2s;
+}
+
+.pageItem:hover:not(.disabled) {
+  background-color: #f0f0f0;
+  border-color: #0d6efd;
+}
+
+/* Сама цифра (посилання) */
+.pageLink {
+  text-decoration: none;
+  color: #0d6efd; /* СИНІЙ КОЛІР ЦИФР */
+  font-size: 14px;
+  font-weight: 500;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Ефект при наведенні */
-.pageItem:hover {
-  background-color: #333;
-  border-color: #666;
-}
-
-/* Стиль активної сторінки (синій колір) */
+/* АКТИВНА СТОРІНКА */
 .active {
-  background-color: #0d6efd !important; /* Твій колір з попереднього коду */
+  background-color: #0d6efd !important;
   border-color: #0d6efd !important;
 }
 
 .active .pageLink {
-  color: #ffffff !important;
+  color: #ffffff !important; /* БІЛА ЦИФРА НА СИНЬОМУ */
 }
 
-/* Стиль для стрілок < та > */
-.pageItem:first-child,
-.pageItem:last-child {
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.05);
+.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

@@ -1,40 +1,41 @@
 import Link from "next/link";
 import styles from "./Sidebar.module.css";
-// Імпортуємо функцію з твого API файлу
 import { fetchNotes } from "@/lib/api";
-
-// Описуємо структуру нотатки (Note), щоб прибрати помилку "Cannot find name 'Note'"
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  tag: string;
-}
+import { Note } from "@/types/note";
 
 export default async function SidebarNotes() {
-  // Тепер TypeScript знає, що таке fetchNotes і Note
-  const notes: Note[] = await fetchNotes().catch(() => []);
+  // 1. Отримуємо ВСІ нотатки (без фільтрів), щоб витягнути з них теги
+  const allNotes: Note[] = await fetchNotes().catch(() => []);
 
-  // 1. Отримуємо теги з існуючих нотаток
-  const dynamicTags = notes.map((n) => n.tag);
-
-  // 2. Додаємо "All Notes" та "Meeting" вручну в масив
-  const manualTags = ["All Notes", "Meeting", ...dynamicTags];
-
-  // 3. Робимо список унікальним (щоб не було два "Work")
-  const tags = Array.from(new Set(manualTags));
+  // 2. Створюємо набір унікальних тегів, які існують у базі
+  const existingTags = allNotes
+    .map((note) => note.tag) // Беремо тільки поле tag
+    .filter((tag): tag is string => !!tag) // Відсікаємо порожні теги
+    .reduce((acc: string[], tag: string) => {
+      // Робимо першу літеру великою для одноманітності
+      const formatted =
+        tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
+      if (!acc.includes(formatted)) {
+        acc.push(formatted);
+      }
+      return acc;
+    }, []);
 
   return (
     <div className={styles.sidebarContainer}>
       <ul className={styles.list}>
-        {tags.map((tag) => (
+        {/* Пункт "Усі нотатки" є завжди */}
+        <li key="all">
+          <Link href="/notes/filter/all" className={styles.link}>
+            All Notes
+          </Link>
+        </li>
+
+        {/* Виводимо тільки ті теги, які є в нотатках */}
+        {existingTags.sort().map((tag) => (
           <li key={tag}>
             <Link
-              href={
-                tag === "All Notes"
-                  ? "/notes/filter"
-                  : `/notes/filter?tag=${tag}`
-              }
+              href={`/notes/filter/${tag.toLowerCase()}`}
               className={styles.link}
             >
               {tag}

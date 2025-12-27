@@ -1,0 +1,31 @@
+.container {
+  /* Прибираємо min-height та фоновий колір, щоб вони не перекривали модалку */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  padding: 0;
+}
+
+.formCard {
+  /* Робимо фон прозорим, щоб бачити білий фон модалки */
+  background-color: transparent;
+  padding: 10px 0;
+  border-radius: 0;
+  width: 100%;
+  max-width: 500px;
+  border: none; /* Прибираємо темну рамку */
+}
+
+.title {
+  /* Змінюємо колір тексту на темний, щоб його було видно на білому */
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Якщо у тебе є лейбли або інпути, їм теж варто дати темний колір тексту */
+.label {
+  color: #333;
+}

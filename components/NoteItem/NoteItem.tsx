@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Note } from "@/types/note";
+import { Note } from "@/types/note";
 import css from "./NoteItem.module.css";
 
 interface NoteItemProps {
@@ -14,7 +14,6 @@ export default function NoteItem({ note, onDelete }: NoteItemProps) {
     <div className={css.listItem}>
       <div className={css.contentWrapper}>
         <h3 className={css.title}>{note.title}</h3>
-        {/* Обмежуємо текст, щоб картки були однакового розміру */}
         <p className={css.content}>
           {note.content.length > 120
             ? `${note.content.substring(0, 120)}...`
@@ -23,13 +22,12 @@ export default function NoteItem({ note, onDelete }: NoteItemProps) {
       </div>
 
       <div className={css.footer}>
-        <span className={css.tag}>{note.tag}</span>
+        {/* Відображаємо тег нотатки */}
+        <span className={css.tag}>{note.tag || "Personal"}</span>
 
         <div className={css.actions}>
-          {/* scroll={false} каже Next.js відкрити перехоплений маршрут (модалку) */}
           <Link
-            href={`/notes/${note.id}`}
-            scroll={false}
+            href={`/notes/${note.id}`} // Перехід на сторінку деталей
             className={css.detailsLink}
           >
             View details
@@ -39,7 +37,9 @@ export default function NoteItem({ note, onDelete }: NoteItemProps) {
             className={css.button}
             onClick={(e) => {
               e.preventDefault();
-              onDelete();
+              if (confirm("Видалити цю нотатку?")) {
+                onDelete();
+              }
             }}
             type="button"
           >

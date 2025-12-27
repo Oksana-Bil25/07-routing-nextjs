@@ -5,5 +5,7 @@ body {
   flex-direction: column;
   min-height: 100vh;
   margin: 0;
-  background-color: #f8f9fa;
+  /* Гарантуємо світлий фон і перебиваємо системні налаштування */
+  background-color: #f8f9fa !important;
+  color: #212529;
 }

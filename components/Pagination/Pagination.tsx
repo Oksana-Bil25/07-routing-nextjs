@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import ReactPaginate from "react-paginate";
 import css from "./Pagination.module.css";
@@ -14,21 +15,22 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
 }) => {
+  if (totalPages <= 1) return null;
+
   const handlePageClick = (data: { selected: number }) => {
     onPageChange(data.selected + 1);
   };
 
-  if (totalPages <= 1) return null;
-
   return (
-    <nav className={css.paginationContainer}>
+    <nav className={css.paginationWrapper}>
       <ReactPaginate
-        previousLabel={"<"}
-        nextLabel={">"}
+        previousLabel={"←"}
+        nextLabel={"→"}
         breakLabel={"..."}
         pageCount={totalPages}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={3}
+        // ВІДОБРАЖЕННЯ ЦИФР
+        marginPagesDisplayed={2} // Скільки цифр показувати на початку і в кінці
+        pageRangeDisplayed={5} // Скільки цифр показувати навколо поточної сторінки
         onPageChange={handlePageClick}
         forcePage={currentPage - 1}
         containerClassName={css.pagination}
@@ -38,10 +40,8 @@ const Pagination: React.FC<PaginationProps> = ({
         previousLinkClassName={css.pageLink}
         nextClassName={css.pageItem}
         nextLinkClassName={css.pageLink}
-        breakClassName={css.pageItem}
-        breakLinkClassName={css.pageLink}
         activeClassName={css.active}
-        renderOnZeroPageCount={null}
+        disabledClassName={css.disabled}
       />
     </nav>
   );
