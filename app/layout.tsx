@@ -1,5 +1,5 @@
 import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer"; // Рядок 2, де була помилка
+import Footer from "@/components/Footer/Footer";
 import "./globals.css";
 
 export default function RootLayout({
@@ -9,7 +9,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      {/* Додаємо стилі Flexbox, щоб футер завжди був притиснутий до низу */}
       <body
         style={{
           display: "flex",
@@ -19,9 +18,8 @@ export default function RootLayout({
         }}
       >
         <Header />
-        {/* main займе весь вільний простір, виштовхуючи футер вниз */}
         <main style={{ flex: "1 0 auto" }}>{children}</main>
-        <Footer /> {/* ОСЬ ТУТ треба було його вставити! */}
+        <Footer />
       </body>
     </html>
   );

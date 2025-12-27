@@ -15,8 +15,7 @@ const CATEGORIES = [
 
 export default function FilterLayout({
   children,
-}: // sidebar, <-- Прибираємо з аргументів, якщо не використовуємо
-{
+}: {
   children: React.ReactNode;
   sidebar: React.ReactNode;
 }) {
@@ -42,7 +41,6 @@ export default function FilterLayout({
             );
           })}
         </nav>
-        {/* Видаляємо {sidebar} звідси, щоб нижні категорії зникли */}
       </aside>
       <main className={styles.contentArea}>{children}</main>
     </div>

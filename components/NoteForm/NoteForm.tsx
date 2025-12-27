@@ -13,7 +13,7 @@ interface NoteFormProps {
   onClose?: () => void;
   onSubmit: (data: NoteFormData) => void;
   isLoading?: boolean;
-  defaultValues?: Partial<NoteFormData>; // Додав для можливості редагування
+  defaultValues?: Partial<NoteFormData>;
 }
 
 const NoteForm = ({

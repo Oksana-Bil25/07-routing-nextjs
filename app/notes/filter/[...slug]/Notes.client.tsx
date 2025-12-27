@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Note } from "@/types/note";
+import { createNote } from "@/lib/api";
 import NoteList from "@/components/NoteList/NoteList";
 import Pagination from "@/components/Pagination/Pagination";
-import CreatePage from "@/app/create/page";
+import NoteForm from "@/components/NoteForm/NoteForm";
 import styles from "./NotesPage.module.css";
 
 const NOTES_PER_PAGE = 9;
@@ -20,10 +22,9 @@ export default function NotesClient({
 }: NotesClientProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  // 🔹 Стан для відкриття модалки
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
-  // 🔍 1. Фільтрація
   const filteredNotes = useMemo(() => {
     if (!search.trim()) return notes;
     const q = search.toLowerCase();
@@ -34,23 +35,30 @@ export default function NotesClient({
     );
   }, [notes, search]);
 
-  // 🔹 2. Рахуємо сторінки
   const totalPages = Math.ceil(filteredNotes.length / NOTES_PER_PAGE);
 
-  // ✅ Визначаємо активну сторінку
   const activePage =
     currentPage > totalPages ? Math.max(1, totalPages) : currentPage;
 
-  // 🔹 3. Пагінація
   const paginatedNotes = useMemo(() => {
     const start = (activePage - 1) * NOTES_PER_PAGE;
     return filteredNotes.slice(start, start + NOTES_PER_PAGE);
   }, [filteredNotes, activePage]);
 
+  const handleFormSubmit = async (data: Partial<Note>) => {
+    try {
+      await createNote(data);
+      setIsModalOpen(false);
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to create note:", error);
+      alert("Помилка при збереженні нотатки");
+    }
+  };
+
   return (
     <div className={styles.app}>
       <header className={styles.toolbar}>
-        {/* Блок 1: Пошук (ліворуч) */}
         <div className={styles.leftGroup}>
           <input
             type="text"
@@ -64,7 +72,6 @@ export default function NotesClient({
           />
         </div>
 
-        {/* Блок 2: Пагінація (центр) */}
         <div className={styles.paginationWrapper}>
           <Pagination
             currentPage={activePage}
@@ -73,7 +80,6 @@ export default function NotesClient({
           />
         </div>
 
-        {/* Блок 3: Кнопка (праворуч) */}
         <div className={styles.buttonWrapper}>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -86,7 +92,6 @@ export default function NotesClient({
 
       <NoteList notes={paginatedNotes} onDelete={onDelete} />
 
-      {/* ✅ МОДАЛЬНЕ ВІКНО */}
       {isModalOpen && (
         <div className={styles.backdrop} onClick={() => setIsModalOpen(false)}>
           <div
@@ -99,7 +104,8 @@ export default function NotesClient({
             >
               ✕
             </button>
-            <CreatePage />
+
+            <NoteForm onSubmit={handleFormSubmit} />
           </div>
         </div>
       )}

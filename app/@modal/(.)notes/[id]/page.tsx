@@ -1,7 +1,10 @@
 import axios from "axios";
+import { notFound } from "next/navigation";
+import NoteDetailsClient from "../../../notes/[id]/NoteDetails.client";
 import { Note } from "@/types/note";
+import styles from "./Modal.module.css"; 
 
-export const noteInstance = axios.create({
+const noteInstance = axios.create({
   baseURL: "https://notehub-public.goit.study/api",
 });
 
@@ -13,58 +16,30 @@ noteInstance.interceptors.request.use((config) => {
   return config;
 });
 
-export interface FetchNotesParams {
-  search?: string;
-  page?: number;
-  tag?: string;
+async function fetchNoteById(id: string): Promise<Note | null> {
+  try {
+    const response = await noteInstance.get<Note>(`/notes/${id}`);
+    return response.data;
+  } catch {
+    return null;
+  }
 }
 
-// 1. Отримання списку
-export const fetchNotes = async ({
-  tag,
-  search,
-  page = 1,
-}: FetchNotesParams = {}): Promise<Note[]> => {
-  const queryParams: Record<string, string | number> = { page };
+export default async function NoteModalPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const note = await fetchNoteById(id);
 
-  if (tag && tag.toLowerCase() !== "all") {
-    const formattedTag =
-      tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
-    queryParams.tag = formattedTag;
-  }
+  if (!note) return notFound();
 
-  if (search?.trim()) {
-    queryParams.search = search.trim();
-  }
-
-  const response = await noteInstance.get<{ notes: Note[] }>("/notes", {
-    params: queryParams,
-  });
-  return response.data.notes;
-};
-
-// 2. Отримання ОДНІЄЇ нотатки (ОБОВ'ЯЗКОВО EXPORT)
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await noteInstance.get<Note>(`/notes/${id}`);
-  return response.data;
-};
-
-// 3. Створення нотатки (ОБОВ'ЯЗКОВО EXPORT)
-export const createNote = async (noteData: Partial<Note>): Promise<Note> => {
-  const response = await noteInstance.post<Note>("/notes", noteData);
-  return response.data;
-};
-
-// 4. Видалення
-export const deleteNote = async (id: string): Promise<void> => {
-  await noteInstance.delete(`/notes/${id}`);
-};
-
-// 5. Оновлення
-export const updateNote = async (
-  id: string,
-  noteData: Partial<Note>
-): Promise<Note> => {
-  const response = await noteInstance.patch<Note>(`/notes/${id}`, noteData);
-  return response.data;
-};
+  return (
+    <div className={styles.backdrop}>
+      <div className={styles.modal}>
+        <NoteDetailsClient note={note} />
+      </div>
+    </div>
+  );
+}

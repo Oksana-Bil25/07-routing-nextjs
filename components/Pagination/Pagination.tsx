@@ -29,8 +29,8 @@ const Pagination: React.FC<PaginationProps> = ({
         breakLabel={"..."}
         pageCount={totalPages}
         // ВІДОБРАЖЕННЯ ЦИФР
-        marginPagesDisplayed={2} // Скільки цифр показувати на початку і в кінці
-        pageRangeDisplayed={5} // Скільки цифр показувати навколо поточної сторінки
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={5}
         onPageChange={handlePageClick}
         forcePage={currentPage - 1}
         containerClassName={css.pagination}
