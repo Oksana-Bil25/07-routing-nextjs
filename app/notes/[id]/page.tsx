@@ -1,14 +1,26 @@
 import { fetchNoteById } from "@/lib/api";
-import NoteDetailsClient from "./NoteDetails.client";
+import { notFound } from "next/navigation";
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
+export default async function NotePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
-export default async function NotePage({ params }: Props) {
-  const note = await fetchNoteById(params.id);
+  const note = await fetchNoteById(id).catch(() => null);
 
-  return <NoteDetailsClient note={note} />;
+  if (!note) {
+    return notFound();
+  }
+
+  return (
+    <section>
+      <h1>{note.title}</h1>
+      <div>
+        <p>{note.content}</p>
+        <p>Tag: {note.tag}</p>
+      </div>
+    </section>
+  );
 }

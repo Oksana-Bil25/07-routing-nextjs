@@ -1,11 +1,16 @@
 import NotePreviewClient from "./NotePreview.client";
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
+interface Props {
+  params: Promise<{ id: string }>;
+}
 
-export default function NoteModalPage({ params }: Props) {
-  return <NotePreviewClient noteId={params.id} />;
+export default async function NoteModalPage({ params }: Props) {
+  const resolvedParams = await params;
+
+  return (
+    <div className="modal-overlay">
+      {/* Використовуємо саме той компонент, який імпортували вище */}
+      <NotePreviewClient noteId={resolvedParams.id} />
+    </div>
+  );
 }

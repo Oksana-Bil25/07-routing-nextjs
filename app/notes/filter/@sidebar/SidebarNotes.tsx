@@ -1,40 +1,47 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import styles from "./Sidebar.module.css";
+// Імпортуємо функцію з твого API файлу
+import { fetchNotes } from "@/lib/api";
 
-const CATEGORIES = [
-  { name: "All Notes", slug: "all" },
-  { name: "Work", slug: "work" },
-  { name: "Personal", slug: "personal" },
-  { name: "Todo", slug: "todo" },
-];
+// Описуємо структуру нотатки (Note), щоб прибрати помилку "Cannot find name 'Note'"
+interface Note {
+  id: string;
+  title: string;
+  content: string;
+  tag: string;
+}
 
-export default function SidebarNotes() {
-  const pathname = usePathname();
+export default async function SidebarNotes() {
+  // Тепер TypeScript знає, що таке fetchNotes і Note
+  const notes: Note[] = await fetchNotes().catch(() => []);
+
+  // 1. Отримуємо теги з існуючих нотаток
+  const dynamicTags = notes.map((n) => n.tag);
+
+  // 2. Додаємо "All Notes" та "Meeting" вручну в масив
+  const manualTags = ["All Notes", "Meeting", ...dynamicTags];
+
+  // 3. Робимо список унікальним (щоб не було два "Work")
+  const tags = Array.from(new Set(manualTags));
 
   return (
-    <aside className={styles.sidebar}>
-      <h2 className={styles.title}>Categories</h2>
+    <div className={styles.sidebarContainer}>
       <ul className={styles.list}>
-        {CATEGORIES.map((cat) => {
-          const href =
-            cat.slug === "all" ? "/notes/filter" : `/notes/filter/${cat.slug}`;
-          const active = pathname === href;
-
-          return (
-            <li key={cat.slug}>
-              <Link
-                href={href}
-                className={active ? styles.active : styles.link}
-              >
-                {cat.name}
-              </Link>
-            </li>
-          );
-        })}
+        {tags.map((tag) => (
+          <li key={tag}>
+            <Link
+              href={
+                tag === "All Notes"
+                  ? "/notes/filter"
+                  : `/notes/filter?tag=${tag}`
+              }
+              className={styles.link}
+            >
+              {tag}
+            </Link>
+          </li>
+        ))}
       </ul>
-    </aside>
+    </div>
   );
 }

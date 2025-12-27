@@ -1,4 +1,3 @@
-import Link from "next/link";
 import styles from "./Home.module.css";
 
 export default function Home() {
@@ -6,25 +5,17 @@ export default function Home() {
     <main className={styles.container}>
       <h1 className={styles.title}>Welcome to NoteHub</h1>
 
-      <div
-        style={{
-          margin: "20px 0",
-          display: "flex",
-          justifyContent: "center",
-          gap: "20px",
-        }}
-      >
-        <Link href="/" className={styles.createButton}>
-          Home
-        </Link>
-        <Link href="/notes/filter" className={styles.createButton}>
-          Notes
-        </Link>
-      </div>
-
       <p className={styles.description}>
         NoteHub is a simple and efficient application designed for managing
-        personal notes.
+        personal notes. It helps keep your thoughts organized and accessible in
+        one place, whether you are at home or on the go.
+      </p>
+
+      <p className={styles.description}>
+        The app provides a clean interface for writing, editing, and browsing
+        notes. With support for keyword search and structured organization,
+        NoteHub offers a streamlined experience for anyone who values clarity
+        and productivity.
       </p>
     </main>
   );

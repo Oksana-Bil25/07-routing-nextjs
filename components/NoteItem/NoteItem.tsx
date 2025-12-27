@@ -14,14 +14,24 @@ export default function NoteItem({ note, onDelete }: NoteItemProps) {
     <div className={css.listItem}>
       <div className={css.contentWrapper}>
         <h3 className={css.title}>{note.title}</h3>
-        <p className={css.content}>{note.content}</p>
+        {/* Обмежуємо текст, щоб картки були однакового розміру */}
+        <p className={css.content}>
+          {note.content.length > 120
+            ? `${note.content.substring(0, 120)}...`
+            : note.content}
+        </p>
       </div>
 
       <div className={css.footer}>
         <span className={css.tag}>{note.tag}</span>
 
         <div className={css.actions}>
-          <Link href={`/notes/${note.id}`} className={css.detailsLink}>
+          {/* scroll={false} каже Next.js відкрити перехоплений маршрут (модалку) */}
+          <Link
+            href={`/notes/${note.id}`}
+            scroll={false}
+            className={css.detailsLink}
+          >
             View details
           </Link>
 

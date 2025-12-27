@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import css from "./NoteForm.module.css";
 
-interface NoteFormData {
+export interface NoteFormData {
   title: string;
   content: string;
   tag: string;
@@ -13,35 +13,46 @@ interface NoteFormProps {
   onClose?: () => void;
   onSubmit: (data: NoteFormData) => void;
   isLoading?: boolean;
+  defaultValues?: Partial<NoteFormData>; // Додав для можливості редагування
 }
 
-const NoteForm = ({ onClose, onSubmit, isLoading }: NoteFormProps) => {
-  const { register, handleSubmit } = useForm<NoteFormData>();
+const NoteForm = ({
+  onClose,
+  onSubmit,
+  isLoading,
+  defaultValues,
+}: NoteFormProps) => {
+  const { register, handleSubmit } = useForm<NoteFormData>({
+    defaultValues,
+  });
 
   return (
     <form className={css.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={css.field}>
         <label className={css.label}>Title</label>
         <input
+          placeholder="Enter title..."
           className={css.input}
-          {...register("title", { required: true })}
+          {...register("title", { required: "Title is required" })}
         />
       </div>
 
       <div className={css.field}>
         <label className={css.label}>Content</label>
         <textarea
+          placeholder="Write your note here..."
           className={css.textarea}
-          {...register("content", { required: true })}
+          {...register("content", { required: "Content is required" })}
         />
       </div>
 
       <div className={css.field}>
-        <label className={css.label}>Tag</label>
+        <label className={css.label}>Tags</label>
         <select className={css.select} {...register("tag")}>
           <option value="Todo">Todo</option>
           <option value="Personal">Personal</option>
           <option value="Work">Work</option>
+          <option value="Meeting">Meeting</option>
         </select>
       </div>
 

@@ -1,37 +1,39 @@
 "use client";
-
-import { useQuery } from "@tanstack/react-query";
-import { fetchNotes } from "@/lib/api";
+import Link from "next/link";
 import NoteList from "@/components/NoteList/NoteList";
-import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
+import styles from "./NotesPage.module.css";
 import { Note } from "@/types/note";
 
-interface NotesClientProps {
-  category?: string;
-}
-
-export default function NotesClient({ category }: NotesClientProps) {
-  const normalizedCategory = category === "all" ? undefined : category;
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", normalizedCategory ?? "all"],
-    queryFn: () =>
-      fetchNotes({
-        search: "",
-        page: 1,
-        category: normalizedCategory,
-      }),
-    staleTime: 1000 * 60,
-  });
-
-  if (isLoading) return <LoadingIndicator />;
-  if (isError) return <p style={{ color: "red" }}>Error loading notes.</p>;
-
-  const notes: Note[] = Array.isArray(data) ? data : data?.notes ?? [];
-
+export default function NotesClient({
+  notes = [],
+  onDelete,
+}: {
+  notes: Note[];
+  onDelete: (id: string) => void;
+}) {
   return (
-    <div>
-      {notes.length > 0 ? <NoteList notes={notes} /> : <p>No notes found.</p>}
+    <div className={styles.app}>
+      <header className={styles.toolbar}>
+        <div className={styles.leftGroup}>
+          <input
+            type="text"
+            placeholder="Search notes"
+            className={styles.searchInput}
+          />
+          <div className={styles.pagination}>
+            <button className={styles.pageBtn}>←</button>
+            <button className={`${styles.pageBtn} ${styles.active}`}>1</button>
+            <button className={styles.pageBtn}>2</button>
+            <button className={styles.pageBtn}>→</button>
+          </div>
+        </div>
+
+        <Link href="/notes/create" className={styles.button}>
+          Create note +
+        </Link>
+      </header>
+
+      <NoteList notes={notes} onDelete={onDelete} />
     </div>
   );
 }

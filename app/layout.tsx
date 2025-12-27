@@ -1,20 +1,27 @@
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer"; // Рядок 2, де була помилка
 import "./globals.css";
-import { Providers } from "./providers";
 
 export default function RootLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body>
-        <Providers>
-          {children}
-          {modal}
-        </Providers>
+      {/* Додаємо стилі Flexbox, щоб футер завжди був притиснутий до низу */}
+      <body
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+          margin: 0,
+        }}
+      >
+        <Header />
+        {/* main займе весь вільний простір, виштовхуючи футер вниз */}
+        <main style={{ flex: "1 0 auto" }}>{children}</main>
+        <Footer /> {/* ОСЬ ТУТ треба було його вставити! */}
       </body>
     </html>
   );
