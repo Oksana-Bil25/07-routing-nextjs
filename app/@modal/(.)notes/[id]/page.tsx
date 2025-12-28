@@ -2,7 +2,7 @@ import axios from "axios";
 import { notFound } from "next/navigation";
 import NoteDetailsClient from "../../../notes/[id]/NoteDetails.client";
 import { Note } from "@/types/note";
-import styles from "./Modal.module.css"; 
+import styles from "../../../../app/notes/filter/[...slug]/NotesPage.module.css";
 
 const noteInstance = axios.create({
   baseURL: "https://notehub-public.goit.study/api",
