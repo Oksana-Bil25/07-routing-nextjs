@@ -1,29 +1,12 @@
-import axios from "axios";
 import { notFound } from "next/navigation";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { fetchNoteById } from "@/lib/api";
 import NoteDetailsClient from "../../../notes/[id]/NoteDetails.client";
-import { Note } from "@/types/note";
-import styles from "../../../../app/notes/filter/[...slug]/NotesPage.module.css";
-
-const noteInstance = axios.create({
-  baseURL: "https://notehub-public.goit.study/api",
-});
-
-noteInstance.interceptors.request.use((config) => {
-  const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-async function fetchNoteById(id: string): Promise<Note | null> {
-  try {
-    const response = await noteInstance.get<Note>(`/notes/${id}`);
-    return response.data;
-  } catch {
-    return null;
-  }
-}
+import styles from "../../../../components/Modal/Modal.module.css";
 
 export default async function NoteModalPage({
   params,
@@ -31,14 +14,28 @@ export default async function NoteModalPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const note = await fetchNoteById(id);
+  const queryClient = new QueryClient();
 
-  if (!note) return notFound();
+  // 1. Prefetching (Завдання 11)
+  await queryClient.prefetchQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+  });
+
+  const state = dehydrate(queryClient);
+
+  // Якщо в кеші порожньо — 404
+  if (!state.queries.length) {
+    return notFound();
+  }
 
   return (
     <div className={styles.backdrop}>
-      <div className={styles.modal}>
-        <NoteDetailsClient note={note} />
+      <div className={styles.modalBody}>
+        <HydrationBoundary state={state}>
+          {/* Передаємо тільки ID — клієнт сам підхопить дані з HydrationBoundary */}
+          <NoteDetailsClient id={id} />
+        </HydrationBoundary>
       </div>
     </div>
   );

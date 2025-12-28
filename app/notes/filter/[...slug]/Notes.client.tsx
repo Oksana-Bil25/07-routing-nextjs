@@ -1,60 +1,54 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { Note } from "@/types/note";
-import { createNote } from "@/lib/api";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchNotes, deleteNote } from "@/lib/api";
+import { useDebounce } from "@/components/hooks/useDebounce";
 import NoteList from "@/components/NoteList/NoteList";
 import Pagination from "@/components/Pagination/Pagination";
-import NoteForm from "@/components/NoteForm/NoteForm";
 import styles from "./NotesPage.module.css";
-
-const NOTES_PER_PAGE = 9;
+import Link from "next/link";
 
 interface NotesClientProps {
-  notes: Note[];
-  onDelete: (id: string) => void;
+  tag?: string; // Тепер приймаємо тег
 }
 
-export default function NotesClient({
-  notes = [],
-  onDelete,
-}: NotesClientProps) {
-  const [currentPage, setCurrentPage] = useState(1);
+export default function NotesClient({ tag }: NotesClientProps) {
   const [search, setSearch] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
+  const queryClient = useQueryClient();
 
-  const filteredNotes = useMemo(() => {
-    if (!search.trim()) return notes;
-    const q = search.toLowerCase();
-    return notes.filter(
-      (note: Note) =>
-        note.title.toLowerCase().includes(q) ||
-        note.content.toLowerCase().includes(q)
-    );
-  }, [notes, search]);
+  // 1. Дебаунс пошуку (вимога ментора)
+  const debouncedSearch = useDebounce(search, 500);
 
-  const totalPages = Math.ceil(filteredNotes.length / NOTES_PER_PAGE);
+  // 2. Отримання даних через useQuery (вимога ментора)
+  // Ключ залежить від тегу, пошуку та сторінки
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["notes", tag, debouncedSearch, currentPage],
+    queryFn: () =>
+      fetchNotes({
+        tag,
+        search: debouncedSearch,
+        page: currentPage,
+      }),
+  });
 
-  const activePage =
-    currentPage > totalPages ? Math.max(1, totalPages) : currentPage;
+  // 3. Мутація видалення через React Query
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteNote(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+  });
 
-  const paginatedNotes = useMemo(() => {
-    const start = (activePage - 1) * NOTES_PER_PAGE;
-    return filteredNotes.slice(start, start + NOTES_PER_PAGE);
-  }, [filteredNotes, activePage]);
-
-  const handleFormSubmit = async (data: Partial<Note>) => {
-    try {
-      await createNote(data);
-      setIsModalOpen(false);
-      router.refresh();
-    } catch (error) {
-      console.error("Failed to create note:", error);
-      alert("Помилка при збереженні нотатки");
+  const handleDelete = (id: string) => {
+    if (confirm("Delete this note?")) {
+      deleteMutation.mutate(id);
     }
   };
+
+  if (isLoading) return <div className={styles.app}>Loading...</div>;
+  if (isError) return <div className={styles.app}>Error loading notes.</div>;
 
   return (
     <div className={styles.app}>
@@ -66,48 +60,35 @@ export default function NotesClient({
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setCurrentPage(1);
+              setCurrentPage(1); // Скидаємо сторінку при пошуку
             }}
             className={styles.searchInput}
           />
         </div>
 
         <div className={styles.paginationWrapper}>
-          <Pagination
-            currentPage={activePage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          {data && data.totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={data.totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
         </div>
 
         <div className={styles.buttonWrapper}>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className={styles.button}
-          >
+          {/* За ТЗ створення нотатки тепер через Link на окремий маршрут або модалку */}
+          <Link href="/create" className={styles.button}>
             Create note +
-          </button>
+          </Link>
         </div>
       </header>
 
-      <NoteList notes={paginatedNotes} onDelete={onDelete} />
-
-      {isModalOpen && (
-        <div className={styles.backdrop} onClick={() => setIsModalOpen(false)}>
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className={styles.closeBtn}
-              onClick={() => setIsModalOpen(false)}
-            >
-              ✕
-            </button>
-
-            <NoteForm onSubmit={handleFormSubmit} />
-          </div>
-        </div>
+      {/* Рендеримо NoteList тільки якщо є нотатки (вимога ментора) */}
+      {data && data.notes.length > 0 ? (
+        <NoteList notes={data.notes} onDelete={handleDelete} />
+      ) : (
+        <p className={styles.empty}>No notes found.</p>
       )}
     </div>
   );

@@ -28,6 +28,18 @@ const NoteForm = ({
 
   return (
     <form className={css.form} onSubmit={handleSubmit(onSubmit)}>
+      {/* Кнопка-хрестик: рендериться, якщо передано функцію закриття */}
+      {onClose && (
+        <button
+          type="button"
+          onClick={onClose}
+          className={css.closeButton}
+          aria-label="Close"
+        >
+          ×
+        </button>
+      )}
+
       <div className={css.field}>
         <label className={css.label}>Title</label>
         <input

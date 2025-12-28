@@ -13,6 +13,11 @@ noteInstance.interceptors.request.use((config) => {
   return config;
 });
 
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
+
 export interface FetchNotesParams {
   tag?: string;
   search?: string;
@@ -23,14 +28,14 @@ const ALLOWED_TAGS = ["Work", "Personal", "Meeting", "Shopping", "Todo"];
 
 export const fetchNotes = async (
   params: FetchNotesParams = {}
-): Promise<Note[]> => {
+): Promise<FetchNotesResponse> => {
   const { tag, search, page = 1 } = params;
 
   const queryParams: Record<string, string | number> = {
     page: Number(page),
   };
 
-  if (tag) {
+  if (tag && tag !== "all") {
     const cleanTag =
       tag.trim().charAt(0).toUpperCase() + tag.trim().slice(1).toLowerCase();
 
@@ -43,18 +48,11 @@ export const fetchNotes = async (
     queryParams.search = search.trim();
   }
 
-  try {
-    const response = await noteInstance.get<{ notes: Note[] }>("/notes", {
-      params: queryParams,
-    });
-    return response.data.notes || [];
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      console.error("API Error Status:", error.response?.status);
-      console.error("API Error Data:", error.response?.data);
-    }
-    return [];
-  }
+  const response = await noteInstance.get<FetchNotesResponse>("/notes", {
+    params: queryParams,
+  });
+
+  return response.data;
 };
 
 export const fetchNoteById = async (id: string): Promise<Note> => {
@@ -67,8 +65,9 @@ export const createNote = async (noteData: Partial<Note>): Promise<Note> => {
   return response.data;
 };
 
-export const deleteNote = async (id: string): Promise<void> => {
-  await noteInstance.delete(`/notes/${id}`);
+export const deleteNote = async (id: string): Promise<Note> => {
+  const response = await noteInstance.delete<Note>(`/notes/${id}`);
+  return response.data;
 };
 
 export const updateNote = async (
