@@ -22,14 +22,10 @@ export default function NoteItem({ note, onDelete }: NoteItemProps) {
       </div>
 
       <div className={css.footer}>
-        {/* Відображаємо тег нотатки */}
         <span className={css.tag}>{note.tag || "Personal"}</span>
 
         <div className={css.actions}>
-          <Link
-            href={`/notes/${note.id}`} // Перехід на сторінку деталей
-            className={css.detailsLink}
-          >
+          <Link href={`/notes/${note.id}`} className={css.detailsLink}>
             View details
           </Link>
 

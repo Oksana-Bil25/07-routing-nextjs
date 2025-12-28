@@ -2,19 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNoteById } from "@/lib/api"; // Твоя функція з api.ts
+import { fetchNoteById } from "@/lib/api";
 import css from "./NoteDetails.module.css";
 
 interface NoteDetailsClientProps {
-  id: string; // Тепер приймаємо тільки ID (вимога ментора)
+  id: string;
 }
 
 export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
   const router = useRouter();
 
-  // 1. Отримуємо дані з кешу.
-  // Оскільки ми зробили prefetchQuery на сервері з ключем ["note", id],
-  // цей запит виконається миттєво без "крутілочки" завантаження.
   const { data: note, isLoading } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
@@ -25,7 +22,6 @@ export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
 
   return (
     <div className={css.container}>
-      {/* Кнопка "Назад" тепер працює як закриття модалки */}
       <button onClick={() => router.back()} className={css.backBtn}>
         ← Back
       </button>

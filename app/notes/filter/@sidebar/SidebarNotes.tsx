@@ -1,9 +1,8 @@
-// app/notes/filter/@sidebar/page.tsx або окремий компонент SidebarNotes
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import styles from "../LayoutNotes.module.css"; // Шлях до твоїх стилів
+import styles from "../LayoutNotes.module.css";
 
 const CATEGORIES = [
   "All notes",
@@ -20,7 +19,6 @@ export default function SidebarNotes() {
   return (
     <nav className={styles.sidebarNav}>
       {CATEGORIES.map((cat) => {
-        // Логіка для "All notes" -> slug "all", для інших -> назва тегу
         const slug = cat === "All notes" ? "all" : cat.toLowerCase();
         const href = `/notes/filter/${slug}`;
         const isActive = pathname.includes(slug);

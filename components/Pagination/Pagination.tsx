@@ -28,7 +28,6 @@ const Pagination: React.FC<PaginationProps> = ({
         nextLabel={"→"}
         breakLabel={"..."}
         pageCount={totalPages}
-        // ВІДОБРАЖЕННЯ ЦИФР
         marginPagesDisplayed={2}
         pageRangeDisplayed={5}
         onPageChange={handlePageClick}

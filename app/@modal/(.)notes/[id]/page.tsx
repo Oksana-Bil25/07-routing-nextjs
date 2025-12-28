@@ -16,7 +16,6 @@ export default async function NoteModalPage({
   const { id } = await params;
   const queryClient = new QueryClient();
 
-  // 1. Prefetching (Завдання 11)
   await queryClient.prefetchQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
@@ -24,7 +23,6 @@ export default async function NoteModalPage({
 
   const state = dehydrate(queryClient);
 
-  // Якщо в кеші порожньо — 404
   if (!state.queries.length) {
     return notFound();
   }
@@ -33,7 +31,6 @@ export default async function NoteModalPage({
     <div className={styles.backdrop}>
       <div className={styles.modalBody}>
         <HydrationBoundary state={state}>
-          {/* Передаємо тільки ID — клієнт сам підхопить дані з HydrationBoundary */}
           <NoteDetailsClient id={id} />
         </HydrationBoundary>
       </div>

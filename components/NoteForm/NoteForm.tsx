@@ -28,7 +28,6 @@ const NoteForm = ({
 
   return (
     <form className={css.form} onSubmit={handleSubmit(onSubmit)}>
-      {/* Кнопка-хрестик: рендериться, якщо передано функцію закриття */}
       {onClose && (
         <button
           type="button"

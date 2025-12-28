@@ -10,7 +10,7 @@ import styles from "./NotesPage.module.css";
 import Link from "next/link";
 
 interface NotesClientProps {
-  tag?: string; // Тепер приймаємо тег
+  tag?: string;
 }
 
 export default function NotesClient({ tag }: NotesClientProps) {
@@ -18,11 +18,8 @@ export default function NotesClient({ tag }: NotesClientProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const queryClient = useQueryClient();
 
-  // 1. Дебаунс пошуку (вимога ментора)
   const debouncedSearch = useDebounce(search, 500);
 
-  // 2. Отримання даних через useQuery (вимога ментора)
-  // Ключ залежить від тегу, пошуку та сторінки
   const { data, isLoading, isError } = useQuery({
     queryKey: ["notes", tag, debouncedSearch, currentPage],
     queryFn: () =>
@@ -33,7 +30,6 @@ export default function NotesClient({ tag }: NotesClientProps) {
       }),
   });
 
-  // 3. Мутація видалення через React Query
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteNote(id),
     onSuccess: () => {
@@ -60,7 +56,7 @@ export default function NotesClient({ tag }: NotesClientProps) {
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setCurrentPage(1); // Скидаємо сторінку при пошуку
+              setCurrentPage(1);
             }}
             className={styles.searchInput}
           />
@@ -77,14 +73,12 @@ export default function NotesClient({ tag }: NotesClientProps) {
         </div>
 
         <div className={styles.buttonWrapper}>
-          {/* За ТЗ створення нотатки тепер через Link на окремий маршрут або модалку */}
           <Link href="/create" className={styles.button}>
             Create note +
           </Link>
         </div>
       </header>
 
-      {/* Рендеримо NoteList тільки якщо є нотатки (вимога ментора) */}
       {data && data.notes.length > 0 ? (
         <NoteList notes={data.notes} onDelete={handleDelete} />
       ) : (
