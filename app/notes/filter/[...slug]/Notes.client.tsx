@@ -6,8 +6,10 @@ import { fetchNotes, deleteNote } from "@/lib/api";
 import { useDebounce } from "@/components/hooks/useDebounce";
 import NoteList from "@/components/NoteList/NoteList";
 import Pagination from "@/components/Pagination/Pagination";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import Modal from "@/components/Modal/Modal";
+import NoteForm from "@/components/NoteForm/NoteForm";
 import styles from "./NotesPage.module.css";
-import Link from "next/link";
 
 interface NotesClientProps {
   tag?: string;
@@ -16,18 +18,15 @@ interface NotesClientProps {
 export default function NotesClient({ tag }: NotesClientProps) {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const queryClient = useQueryClient();
   const debouncedSearch = useDebounce(search, 500);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["notes", tag, debouncedSearch, currentPage],
     queryFn: () =>
-      fetchNotes({
-        tag,
-        search: debouncedSearch,
-        page: currentPage,
-      }),
+      fetchNotes({ tag, search: debouncedSearch, page: currentPage }),
   });
 
   const deleteMutation = useMutation({
@@ -38,10 +37,11 @@ export default function NotesClient({ tag }: NotesClientProps) {
   });
 
   const handleDelete = (id: string) => {
-    if (confirm("Delete this note?")) {
-      deleteMutation.mutate(id);
-    }
+    if (confirm("Delete this note?")) deleteMutation.mutate(id);
   };
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   if (isLoading) return <div className={styles.app}>Loading...</div>;
   if (isError) return <div className={styles.app}>Error loading notes.</div>;
@@ -49,19 +49,13 @@ export default function NotesClient({ tag }: NotesClientProps) {
   return (
     <div className={styles.app}>
       <header className={styles.toolbar}>
-        <div className={styles.leftGroup}>
-          <input
-            type="text"
-            placeholder="Search notes"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className={styles.searchInput}
-          />
-        </div>
-
+        <SearchBox
+          value={search}
+          onChange={(val) => {
+            setSearch(val);
+            setCurrentPage(1);
+          }}
+        />
         <div className={styles.paginationWrapper}>
           {data && data.totalPages > 1 && (
             <Pagination
@@ -71,18 +65,29 @@ export default function NotesClient({ tag }: NotesClientProps) {
             />
           )}
         </div>
-
-        <div className={styles.buttonWrapper}>
-          <Link href="/create" className={styles.button}>
-            Create note +
-          </Link>
-        </div>
+        <button onClick={openModal} className={styles.button}>
+          Create note +
+        </button>
       </header>
 
       {data && data.notes.length > 0 ? (
         <NoteList notes={data.notes} onDelete={handleDelete} />
       ) : (
         <p className={styles.empty}>No notes found.</p>
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={closeModal}>
+          <NoteForm
+            onClose={closeModal}
+            defaultValues={{
+              tag:
+                tag && tag !== "all"
+                  ? tag.charAt(0).toUpperCase() + tag.slice(1)
+                  : "Todo",
+            }}
+          />
+        </Modal>
       )}
     </div>
   );

@@ -1,66 +1,66 @@
-import axios from "axios";
-import { Note } from "@/types/note";
+"use client";
 
-export const noteInstance = axios.create({
-  baseURL: "https://notehub-public.goit.study/api",
-});
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { fetchNoteById } from "@/lib/api";
+import Modal from "@/components/Modal/Modal";
+import styles from "./NotePreview.module.css";
 
-noteInstance.interceptors.request.use((config) => {
-  const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export interface FetchNotesParams {
-  search?: string;
-  page?: number;
-  tag?: string;
+interface NotePreviewClientProps {
+  id: string;
 }
 
-export const fetchNotes = async ({
-  tag,
-  search,
-  page = 1,
-}: FetchNotesParams = {}): Promise<Note[]> => {
-  const queryParams: Record<string, string | number> = { page };
+export default function NotePreviewClient({ id }: NotePreviewClientProps) {
+  const router = useRouter();
 
-  if (tag && tag.toLowerCase() !== "all") {
-    const formattedTag =
-      tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
-    queryParams.tag = formattedTag;
-  }
-
-  if (search && search.trim() !== "") {
-    queryParams.search = search.trim();
-  }
-
-  const response = await noteInstance.get<{ notes: Note[] }>("/notes", {
-    params: queryParams,
+  const {
+    data: note,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
   });
 
-  return response.data.notes;
-};
+  const handleClose = () => {
+    router.back();
+  };
 
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await noteInstance.get<Note>(`/notes/${id}`);
-  return response.data;
-};
+  return (
+    <Modal onClose={handleClose}>
+      <div className={styles.previewContainer}>
+        {isLoading && <p>Loading note details...</p>}
 
-export const createNote = async (noteData: Partial<Note>): Promise<Note> => {
-  const response = await noteInstance.post<Note>("/notes", noteData);
-  return response.data;
-};
+        {isError && (
+          <div className={styles.error}>
+            <p>Failed to load note.</p>
+            <button onClick={handleClose}>Close</button>
+          </div>
+        )}
 
-export const deleteNote = async (id: string): Promise<void> => {
-  await noteInstance.delete(`/notes/${id}`);
-};
+        {note && (
+          <article className={styles.noteContent}>
+            <header className={styles.header}>
+              <h2 className={styles.title}>{note.title}</h2>
+              <span className={styles.tag}>{note.tag}</span>
+            </header>
 
-export const updateNote = async (
-  id: string,
-  noteData: Partial<Note>
-): Promise<Note> => {
-  const response = await noteInstance.patch<Note>(`/notes/${id}`, noteData);
-  return response.data;
-};
+            <div className={styles.body}>
+              <p>{note.content}</p>
+            </div>
+
+            <footer className={styles.footer}>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={handleClose}
+              >
+                Close Preview
+              </button>
+            </footer>
+          </article>
+        )}
+      </div>
+    </Modal>
+  );
+}

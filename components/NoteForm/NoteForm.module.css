@@ -1,5 +1,5 @@
 .form {
-  position: relative; /* Необхідно для позиціонування closeButton */
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -8,7 +8,6 @@
   margin: 0 auto;
 }
 
-/* Стиль для кнопки-хрестика */
 .closeButton {
   position: absolute;
   top: -10px;

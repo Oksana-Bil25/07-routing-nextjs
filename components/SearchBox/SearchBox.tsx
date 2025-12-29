@@ -4,7 +4,7 @@ import React from "react";
 
 interface SearchBoxProps {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
 }
 
 const SearchBox = ({ value, onChange }: SearchBoxProps) => {
@@ -14,7 +14,7 @@ const SearchBox = ({ value, onChange }: SearchBoxProps) => {
       type="text"
       placeholder="Search notes"
       value={value}
-      onChange={onChange}
+      onChange={(e) => onChange(e.target.value)}
     />
   );
 };

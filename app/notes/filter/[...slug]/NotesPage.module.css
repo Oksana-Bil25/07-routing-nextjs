@@ -4,8 +4,6 @@
   padding: 24px;
   box-sizing: border-box;
   background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .toolbar {
@@ -14,6 +12,7 @@
   align-items: center;
   width: 100%;
   margin-bottom: 25px;
+  gap: 20px;
 }
 
 .leftGroup {
@@ -21,51 +20,50 @@
   justify-content: flex-start;
 }
 
-.searchInput {
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  width: 250px;
-  background-color: #ffffff;
-  color: #212529;
-  font-size: 14px;
-}
-
 .paginationWrapper {
   display: flex;
   justify-content: center;
-  gap: 8px;
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .button {
+  justify-self: end;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   height: 38px;
-  padding: 0 15px;
+  padding: 0 20px;
   background-color: #0d6efd;
   color: white !important;
   border-radius: 6px;
-  text-decoration: none;
   font-weight: 500;
   white-space: nowrap;
-
+  cursor: pointer;
+  width: fit-content;
   border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
+  transition: background-color 0.2s;
 }
 
+.button:hover {
+  background-color: #0b5ed7;
+}
+
+/* Модалка та бекдроп */
 .backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-
   backdrop-filter: blur(4px);
 }
 
@@ -75,31 +73,8 @@
   border-radius: 16px;
   width: 95%;
   max-width: 550px;
-
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   position: relative;
-}
-
-.modalContent h2 {
-  margin-top: 0;
-  color: #1a1a1b;
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.closeBtn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #666;
-}
-
-.closeBtn:hover {
-  color: #000;
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
@@ -111,12 +86,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.buttonWrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-.button:hover {
-  background-color: #0b5ed7;
 }

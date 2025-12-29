@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import styles from "../LayoutNotes.module.css";
+import styles from "./Sidebar.module.css";
 
 const CATEGORIES = [
   "All notes",

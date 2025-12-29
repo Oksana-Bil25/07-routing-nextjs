@@ -1,5 +1,5 @@
 import SidebarNotes from "./SidebarNotes";
 
-export default function Default() {
+export default function Page() {
   return <SidebarNotes />;
 }

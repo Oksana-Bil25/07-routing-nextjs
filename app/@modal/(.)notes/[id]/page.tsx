@@ -5,8 +5,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
-import NoteDetailsClient from "../../../notes/[id]/NoteDetails.client";
-import styles from "../../../../components/Modal/Modal.module.css";
+import NotePreviewClient from "./NotePreview.client";
 
 export default async function NoteModalPage({
   params,
@@ -16,24 +15,20 @@ export default async function NoteModalPage({
   const { id } = await params;
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
-  });
-
-  const state = dehydrate(queryClient);
-
-  if (!state.queries.length) {
+  try {
+    await queryClient.prefetchQuery({
+      queryKey: ["note", id],
+      queryFn: () => fetchNoteById(id),
+    });
+  } catch {
     return notFound();
   }
 
+  const state = dehydrate(queryClient);
+
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.modalBody}>
-        <HydrationBoundary state={state}>
-          <NoteDetailsClient id={id} />
-        </HydrationBoundary>
-      </div>
-    </div>
+    <HydrationBoundary state={state}>
+      <NotePreviewClient id={id} />
+    </HydrationBoundary>
   );
 }

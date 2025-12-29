@@ -30,15 +30,12 @@ export const fetchNotes = async (
   params: FetchNotesParams = {}
 ): Promise<FetchNotesResponse> => {
   const { tag, search, page = 1 } = params;
-
-  const queryParams: Record<string, string | number> = {
-    page: Number(page),
-  };
+  const queryParams: Record<string, string | number> = { page: Number(page) };
 
   if (tag && tag !== "all") {
+    // Форматуємо тег: перша велика, інші маленькі
     const cleanTag =
       tag.trim().charAt(0).toUpperCase() + tag.trim().slice(1).toLowerCase();
-
     if (ALLOWED_TAGS.includes(cleanTag)) {
       queryParams.tag = cleanTag;
     }
@@ -65,15 +62,6 @@ export const createNote = async (noteData: Partial<Note>): Promise<Note> => {
   return response.data;
 };
 
-export const deleteNote = async (id: string): Promise<Note> => {
-  const response = await noteInstance.delete<Note>(`/notes/${id}`);
-  return response.data;
-};
-
-export const updateNote = async (
-  id: string,
-  noteData: Partial<Note>
-): Promise<Note> => {
-  const response = await noteInstance.patch<Note>(`/notes/${id}`, noteData);
-  return response.data;
+export const deleteNote = async (id: string): Promise<void> => {
+  await noteInstance.delete(`/notes/${id}`);
 };
