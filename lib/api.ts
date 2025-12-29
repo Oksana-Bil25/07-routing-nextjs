@@ -33,7 +33,6 @@ export const fetchNotes = async (
   const queryParams: Record<string, string | number> = { page: Number(page) };
 
   if (tag && tag !== "all") {
-    // Форматуємо тег: перша велика, інші маленькі
     const cleanTag =
       tag.trim().charAt(0).toUpperCase() + tag.trim().slice(1).toLowerCase();
     if (ALLOWED_TAGS.includes(cleanTag)) {
@@ -62,6 +61,7 @@ export const createNote = async (noteData: Partial<Note>): Promise<Note> => {
   return response.data;
 };
 
-export const deleteNote = async (id: string): Promise<void> => {
-  await noteInstance.delete(`/notes/${id}`);
+export const deleteNote = async (id: string): Promise<Note> => {
+  const response = await noteInstance.delete<Note>(`/notes/${id}`);
+  return response.data;
 };

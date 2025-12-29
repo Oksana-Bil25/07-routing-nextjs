@@ -13,7 +13,7 @@ export interface NoteFormData {
 
 interface NoteFormProps {
   onClose?: () => void;
-  defaultValues?: Partial<NoteFormData>; // Додано для автоматичного вибору тегу
+  defaultValues?: Partial<NoteFormData>;
 }
 
 const NoteForm = ({ onClose, defaultValues }: NoteFormProps) => {

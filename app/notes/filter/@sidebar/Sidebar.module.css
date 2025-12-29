@@ -3,12 +3,12 @@
   flex-direction: column;
   gap: 15px;
   padding: 40px 20px;
-  background-color: #000; 
+  background-color: #000;
   min-height: 100vh;
 }
 
 .navItem {
-  color: #888; 
+  color: #888;
   text-decoration: none;
   font-size: 1.1rem;
   transition: all 0.2s ease;
@@ -16,10 +16,10 @@
 }
 
 .navItem:hover {
-  color: #fff; 
+  color: #fff;
 }
 
 .active {
-  color: #0d6efd; 
+  color: #0d6efd;
   font-weight: bold;
 }
